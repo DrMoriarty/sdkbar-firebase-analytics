@@ -150,6 +150,70 @@ static bool jsb_analytics_log_event(JSContext *cx, uint32_t argc, jsval *vp)
     }
 }
 
+static bool jsb_analytics_set_current_screen(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    printLog("jsb_analytics_set_current_screen");
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    JS::CallReceiver rec = JS::CallReceiverFromVp(vp);
+    if(argc == 2) {
+        // screen name, screen class
+        bool ok = true;
+        std::string screen_name, screen_class;
+        JS::RootedValue arg0Val(cx, args.get(0));
+        ok &= jsval_to_std_string(cx, arg0Val, &screen_name);
+        JS::RootedValue arg1Val(cx, args.get(1));
+        ok &= jsval_to_std_string(cx, arg1Val, &screen_class);
+        
+        firebase::analytics::SetCurrentScreen(screen_name.c_str(), screen_class.c_str());
+    } else {
+        JS_ReportError(cx, "Invalid number of arguments");
+        return false;
+    }
+}
+
+static bool jsb_analytics_set_user_id(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    printLog("jsb_analytics_set_user_id");
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    JS::CallReceiver rec = JS::CallReceiverFromVp(vp);
+    if(argc == 1) {
+        // user id
+        bool ok = true;
+        std::string user_id;
+        JS::RootedValue arg0Val(cx, args.get(0));
+        ok &= jsval_to_std_string(cx, arg0Val, &user_id);
+        
+        firebase::analytics::SetUserId(user_id.c_str());
+    } else {
+        JS_ReportError(cx, "Invalid number of arguments");
+        return false;
+    }
+}
+
+static bool jsb_analytics_set_user_property(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    printLog("jsb_analytics_set_user_property");
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    JS::CallReceiver rec = JS::CallReceiverFromVp(vp);
+    if(argc == 2) {
+        // property name, property value
+        bool ok = true;
+        std::string property_name, property_value;
+        JS::RootedValue arg0Val(cx, args.get(0));
+        ok &= jsval_to_std_string(cx, arg0Val, &property_name);
+        JS::RootedValue arg1Val(cx, args.get(1));
+        ok &= jsval_to_std_string(cx, arg1Val, &property_value);
+        
+        firebase::analytics::SetUserProperty(property_name.c_str(), property_value.c_str());
+    } else {
+        JS_ReportError(cx, "Invalid number of arguments");
+        return false;
+    }
+}
+
 ///////////////////////////////////////
 //
 //  Register JS API
@@ -163,5 +227,7 @@ void register_all_analytics_framework(JSContext* cx, JS::HandleObject obj) {
 
     JS_DefineFunction(cx, ns, "init", jsb_analytics_init, 0, JSPROP_ENUMERATE | JSPROP_PERMANENT);
     JS_DefineFunction(cx, ns, "log_event", jsb_analytics_log_event, 1, JSPROP_ENUMERATE | JSPROP_PERMANENT);
-
+    JS_DefineFunction(cx, ns, "set_current_screen", jsb_analytics_set_current_screen, 2, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "set_user_id", jsb_analytics_set_user_id, 1, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "set_user_property", jsb_analytics_set_user_property, 2, JSPROP_ENUMERATE | JSPROP_PERMANENT);
 }
