@@ -101,13 +101,13 @@ static bool jsb_analytics_log_event(JSContext *cx, uint32_t argc, jsval *vp)
             JS_GetPropertyById(cx, tmp, idp, &value);
             if (value.isString()) {
                 JSStringWrapper valueWrapper(value.toString(), cx);
-                result.push_back(new firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(valueWrapper.get())));
+                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(valueWrapper.get())));
             } else if(value.isBoolean()) {
-                result.push_back(new firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toBoolean())));
+                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toBoolean())));
             } else if(value.isDouble()) {
-                result.push_back(new firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toDouble())));
+                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toDouble())));
             } else if(value.isInt32()) {
-                result.push_back(new firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toInt32())));
+                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toInt32())));
             } else {
                 CCASSERT(false, "event parameter has not supported type");
             }
