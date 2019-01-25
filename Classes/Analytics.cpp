@@ -76,7 +76,7 @@ static bool jsb_analytics_log_event(JSContext *cx, uint32_t argc, jsval *vp)
         if (!tmp) {
             CCASSERT(false, "invalid parameters object");
         }
-        std::vector<firebase::analytics::Parameter*> result;
+        std::vector<firebase::analytics::Parameter> result;
     
         JS::RootedObject it(cx, JS_NewPropertyIterator(cx, tmp));
     
@@ -112,12 +112,7 @@ static bool jsb_analytics_log_event(JSContext *cx, uint32_t argc, jsval *vp)
                 CCASSERT(false, "event parameter has not supported type");
             }
         }
-        firebase::analytics::Parameter array[result.size()];
-        for(int i=0; i<result.size(); i++) {
-            array[i] = *result[i];
-        }
-        firebase::analytics::LogEvent(event.c_str(), array, result.size());
-
+        firebase::analytics::LogEvent(event.c_str(), &result[0], result.size());
     } else if(argc == 3) {
         // event name, parameter, value
         bool ok = true;
@@ -226,8 +221,8 @@ void register_all_analytics_framework(JSContext* cx, JS::HandleObject obj) {
     get_or_create_js_obj(cx, obj, "analytics", &ns);
 
     JS_DefineFunction(cx, ns, "init", jsb_analytics_init, 0, JSPROP_ENUMERATE | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "log_event", jsb_analytics_log_event, 1, JSPROP_ENUMERATE | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "set_current_screen", jsb_analytics_set_current_screen, 2, JSPROP_ENUMERATE | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "set_user_id", jsb_analytics_set_user_id, 1, JSPROP_ENUMERATE | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "set_user_property", jsb_analytics_set_user_property, 2, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "logEvent", jsb_analytics_log_event, 1, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "setScreenName", jsb_analytics_set_current_screen, 2, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "setUserID", jsb_analytics_set_user_id, 1, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "setUserProperty", jsb_analytics_set_user_property, 2, JSPROP_ENUMERATE | JSPROP_PERMANENT);
 }
