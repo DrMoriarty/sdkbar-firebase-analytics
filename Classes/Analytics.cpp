@@ -113,6 +113,7 @@ static bool jsb_analytics_log_event(JSContext *cx, uint32_t argc, jsval *vp)
             }
         }
         firebase::analytics::LogEvent(event.c_str(), &result[0], result.size());
+        return true;
     } else if(argc == 3) {
         // event name, parameter, value
         bool ok = true;
@@ -161,6 +162,7 @@ static bool jsb_analytics_set_current_screen(JSContext *cx, uint32_t argc, jsval
         ok &= jsval_to_std_string(cx, arg1Val, &screen_class);
         
         firebase::analytics::SetCurrentScreen(screen_name.c_str(), screen_class.c_str());
+        return true;
     } else {
         JS_ReportError(cx, "Invalid number of arguments");
         return false;
@@ -181,6 +183,7 @@ static bool jsb_analytics_set_user_id(JSContext *cx, uint32_t argc, jsval *vp)
         ok &= jsval_to_std_string(cx, arg0Val, &user_id);
         
         firebase::analytics::SetUserId(user_id.c_str());
+        return true;
     } else {
         JS_ReportError(cx, "Invalid number of arguments");
         return false;
@@ -203,6 +206,7 @@ static bool jsb_analytics_set_user_property(JSContext *cx, uint32_t argc, jsval 
         ok &= jsval_to_std_string(cx, arg1Val, &property_value);
         
         firebase::analytics::SetUserProperty(property_name.c_str(), property_value.c_str());
+        return true;
     } else {
         JS_ReportError(cx, "Invalid number of arguments");
         return false;
