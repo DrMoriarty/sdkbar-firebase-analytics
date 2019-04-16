@@ -101,7 +101,8 @@ static bool jsb_analytics_log_event(JSContext *cx, uint32_t argc, jsval *vp)
             JS_GetPropertyById(cx, tmp, idp, &value);
             if (value.isString()) {
                 JSStringWrapper valueWrapper(value.toString(), cx);
-                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(valueWrapper.get())));
+                std::string tmp(valueWrapper.get());
+                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(tmp)));
             } else if(value.isBoolean()) {
                 result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toBoolean())));
             } else if(value.isDouble()) {
