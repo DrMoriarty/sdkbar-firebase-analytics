@@ -96,19 +96,20 @@ static bool jsb_analytics_log_event(JSContext *cx, uint32_t argc, jsval *vp)
             }
         
             JSStringWrapper keyWrapper(key.toString(), cx);
+            std::string keyStr(keyWrapper.get());
         
             JS::RootedValue value(cx);
             JS_GetPropertyById(cx, tmp, idp, &value);
             if (value.isString()) {
                 JSStringWrapper valueWrapper(value.toString(), cx);
                 std::string tmp(valueWrapper.get());
-                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(tmp)));
+                result.push_back(firebase::analytics::Parameter(keyStr.c_str(), firebase::Variant(tmp)));
             } else if(value.isBoolean()) {
-                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toBoolean())));
+                result.push_back(firebase::analytics::Parameter(keyStr.c_str(), firebase::Variant(value.get().toBoolean())));
             } else if(value.isDouble()) {
-                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toDouble())));
+                result.push_back(firebase::analytics::Parameter(keyStr.c_str(), firebase::Variant(value.get().toDouble())));
             } else if(value.isInt32()) {
-                result.push_back(firebase::analytics::Parameter(keyWrapper.get(), firebase::Variant(value.get().toInt32())));
+                result.push_back(firebase::analytics::Parameter(keyStr.c_str(), firebase::Variant(value.get().toInt32())));
             } else {
                 CCASSERT(false, "event parameter has not supported type");
             }
@@ -129,7 +130,8 @@ static bool jsb_analytics_log_event(JSContext *cx, uint32_t argc, jsval *vp)
         JS::RootedValue arg2Val(cx, args.get(2));
         if (arg2Val.isString()) {
             JSStringWrapper valueWrapper(arg2Val.toString(), cx);
-            firebase::analytics::LogEvent(event.c_str(), parameter.c_str(), valueWrapper.get());
+            std::string tmp(valueWrapper.get());
+            firebase::analytics::LogEvent(event.c_str(), parameter.c_str(), tmp.c_str());
         } else if(arg2Val.isBoolean()) {
             firebase::analytics::LogEvent(event.c_str(), parameter.c_str(), arg2Val.get().toBoolean());
         } else if(arg2Val.isDouble()) {
